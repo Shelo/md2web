@@ -32,6 +32,8 @@ class Watcher(PatternMatchingEventHandler):
             for md in mds:
                 self.fire(md)
 
+        print "Initialization completed. Listening for changes..."
+
     def process(self, event):
         base_name = os.path.basename(event.src_path)
         if self.file_to_watch == None or os.path.basename(event.src_path) == self.file_to_watch:
