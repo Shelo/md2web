@@ -46,9 +46,10 @@ class Watcher(PatternMatchingEventHandler):
             # try to convert the file, this will prevent the demon to fall if the converter give
             # us some error, allowing the user to fix it.
             file_name = self.convert(path)
-        except Exception:
+        except Exception as e:
             # in the case of some exception, notify the user and quit trying.
             print "Error while converting to html."
+            print e
             return
 
         # after the successful convertion, send the file to the SSH server.
@@ -73,7 +74,7 @@ class Watcher(PatternMatchingEventHandler):
 
         # convert it to html with the extensions given, this could raise an exception, but this
         # method is supposed to live inside a try / except.
-        html = markdown.markdown(text, encoding="utf-8", extensions=[WikiLinkExtension(end_url='.html', base_url=""), 'markdown.extensions.tables', 'markdown.extensions.toc', 'markdown.extensions.nl2br'])
+        html = markdown.markdown(text, encoding="utf-8", extensions=[WikiLinkExtension(end_url='.html', base_url="", build_url=format_url), 'markdown.extensions.tables', 'markdown.extensions.toc', 'markdown.extensions.nl2br'])
 
         # try to find a "template.html" in the working directory, if we can't find one, use the one
         # packed with this program.
@@ -107,6 +108,9 @@ class Watcher(PatternMatchingEventHandler):
 
     def on_created(self, event):
         self.process(event)
+
+def format_url(label, base, end):
+    return base + label.lower().replace(" ", "-") + end
 
 def get_configs():
     configs = []
